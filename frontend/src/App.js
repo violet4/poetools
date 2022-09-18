@@ -62,10 +62,14 @@ const hidden = {
   "Lesser Eldritch Ichor": 0.5264916666666667,
   "Turbulent Catalyst": 0.33479846153846154,
   "Tainted Blacksmith's Whetstone": 0.32854666666666665,
+  "Annulment Shard": 0.9803933333333333,
   "Imbued Catalyst": 0.31216571428571427,
   "Abrasive Catalyst": 0.30441,
+  "Elevated Sextant": 29.85774,
   "Vivid Crystallised Lifeforce": 0.056639,
+  "Orb of Annulment": 8.986015384615385,
   "Wild Crystallised Lifeforce": 0.03553,
+  "Operative's Scouting Report": 3.4,
   "Primal Crystallised Lifeforce": 0.02496  
 };
 
@@ -73,19 +77,15 @@ const data = {
   "Mirror of Kalandra": 41743.0,
   "Divine Orb": 209.0,
   "Sacred Orb": 32.666666666666664,
-  "Elevated Sextant": 29.85774,
   "Exalted Orb": 17.41597,
   "Prismatic Catalyst": 9.506777777777778,
-  "Orb of Annulment": 8.986015384615385,
   "Ritual Vessel": 5.0,
   "Ancient Orb": 0.5826728571428571,
-  "Operative's Scouting Report": 3.4,
   "Surveyor's Compass": 1.6228094736842105,
   "Orb of Unmaking": 1.338208,
   "Gemcutter's Prism": 1.1944466666666667,
   "Stacked Deck": 1.0,
   "Chaos Orb": 1,
-  "Annulment Shard": 0.9803933333333333,
   "Regal Orb": 0.7095266666666666,
   "Oil Extractor": 0.64285625,
   "Orb of Regret": 0.511515,
@@ -114,27 +114,37 @@ const data = {
 
 function App() {
   const [denom, setDenom] = useState(1);
+  const [highlighted, setHighlighted] = useState('Chaos Orb');
   return (
     <div className="App">
       {/* {Object.entries(data).forEach(([a, b]) => <span>a</span>)} */}
       {/* {Object.entries(data).forEach(([key, value]) => console.log(`${key}: ${value}`))} */}
       <table>
-        {Object.entries(data).sort(([k,v]) => -v).map(([key, value]) =>
-          <tr onClick={e => setDenom(value)}>
-            <td>
-              {key}
-            </td>
-            <td
-              style={{textAlign: 'right'}}
-            >
-              {(value / denom).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-            </td>
-            <td
-              style={{textAlign: 'right'}}
-            >
-              {(denom / value).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-            </td>
-          </tr>
+        {Object.entries(data).sort(([k,v]) => -v).map(([key, value]) => {
+          const bgcolor = (key===highlighted) ? '#373' : ''
+          return (
+            <tr onClick={e => {
+              setDenom(value);
+              setHighlighted(key);
+            }}>
+              <td
+                style={{backgroundColor: bgcolor}}
+              >
+                {key}
+              </td>
+              <td
+                style={{textAlign: 'right', backgroundColor: bgcolor}}
+              >
+                {(value / denom).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+              </td>
+              <td
+                style={{textAlign: 'right', backgroundColor: bgcolor}}
+              >
+                {(denom / value).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+              </td>
+            </tr>
+          );
+        }
         )}
       </table>
     </div>
