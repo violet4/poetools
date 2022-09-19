@@ -98,7 +98,7 @@ Once your application has been registered you will be able to find your credenti
 
 https://www.pathofexile.com/my-account/applications
 https://www.pathofexile.com/developer/docs#guidelines
-https:/https://www.pathofexile.com/developer/docs/authorization#scopes/www.pathofexile.com/developer/docs/authorization#scopes
+https://www.pathofexile.com/developer/docs/authorization#scopes/www.pathofexile.com/developer/docs/authorization#scopes
 https://www.pathofexile.com/developer/docs/authorization#scopes
 https://www.pathofexile.com/developer/docs/authorization#oauth
 https://www.pathofexile.com/developer/docs/reference
@@ -112,28 +112,47 @@ import json
 
 import requests
 
-today = datetime.date.today().strftime('%Y-%m-%d')
-filename = f'currency_{today}.txt'
-if not os.path.exists(filename):
-    resp = requests.get('https://poe.ninja/api/data/CurrencyOverview?league=Kalandra&type=Currency&language=en')
-    with open(filename, 'w') as fw:
-        print(resp.content.decode(), file=fw)
-
-with open(filename, 'r') as fr:
-    data = json.load(fr)
-
-# import ipdb; ipdb.set_trace()
-currency = dict()
-for cur in data['lines']:
-    currencyTypeName = cur['currencyTypeName']
-    if 'receive' not in cur:
-        print(f"no data for {currencyTypeName}")
-        continue
-    value = cur['receive']['value']
-    currency[currencyTypeName] = value
+import falcon
 
 
-print(json.dumps(currency, indent=4))
-print({k: v for k, v in currency.items() if 'chaos' in k.lower()})
+def get_currency_values():
+    today = datetime.date.today().strftime('%Y-%m-%d')
+    filename = f'currency_{today}.txt'
+    if not os.path.exists(filename):
+        resp = requests.get('https://poe.ninja/api/data/CurrencyOverview?league=Kalandra&type=Currency&language=en')
+        with open(filename, 'w') as fw:
+            print(resp.content.decode(), file=fw)
+
+    with open(filename, 'r') as fr:
+        data = json.load(fr)
+
+    currency = dict()
+    for cur in data['lines']:
+        currencyTypeName = cur['currencyTypeName']
+        if 'receive' not in cur:
+            # print(f"no data for {currencyTypeName}")
+            continue
+        value = cur['receive']['value']
+        currency[currencyTypeName] = value
+
+    return currency
 
 
+class CurrencyResource:
+    def on_get(self, req, resp):
+        resp.status = falcon.HTTP_200
+        # resp.content_type = falcon.MEDIA_TEXT
+        resp.media = get_currency_values()
+
+
+prefix = '/api'
+# prefix = ''
+app = falcon.App()
+app.add_route(prefix+'/currency', CurrencyResource())
+print(os.listdir(os.path.abspath('frontend/build')))
+app.add_static_route('/', os.path.abspath('frontend/build'))
+
+if __name__ == '__main__':
+    currency = get_currency_values()
+    print(json.dumps(currency, indent=4))
+    print({k: v for k, v in currency.items() if 'chaos' in k.lower()})
