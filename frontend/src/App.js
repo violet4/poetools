@@ -211,6 +211,7 @@ function App() {
 
   return (
     <div className="App">
+      See the app home at <a href="https://github.com/violet4/poetools">https://github.com/violet4/poetools</a>.
       <table>
         <tbody>
           <tr>
