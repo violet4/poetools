@@ -104,6 +104,7 @@ https://www.pathofexile.com/developer/docs/authorization#oauth
 https://www.pathofexile.com/developer/docs/reference
 https://www.pathofexile.com/developer/docs#guidelines
 
+https://github.com/brather1ng/RePoE
 
 """
 import datetime
